@@ -1,5 +1,14 @@
 # ninja log v6
 1	398	7641128140971306	CMakeFiles/lista1.dir/main.cpp.obj	a0e20605d29ed5e0
-14	390	7641143149095428	CMakeFiles/lista1.dir/src/main.cpp.obj	ef8d522a38283ff4
-390	493	7641143152857020	lista1.exe	1ec4ba511baf2350
-1	309	7641143524809608	build.ninja	aa9a654110a75ac
+17	1032	7641311897442753	CMakeFiles/lista1.dir/src/main.cpp.obj	ef8d522a38283ff4
+1037	1153	7641311907642747	lista1.exe	ef44e4228810caf0
+1	309	7641329356036347	build.ninja	aa9a654110a75ac
+23	569	7641295671019857	CMakeFiles/lista1.dir/src/csv_reader.cpp.obj	8373563eb1837eef
+2	571	7641187340134614	CMakeFiles/lista1.dir/src/CSVReader.cpp.obj	130fe9863704ad88
+29	1033	7641302857692484	CMakeFiles/lista1.dir/src/graph.cpp.obj	2c2b9dd5c5a44942
+24	1037	7641311897517744	CMakeFiles/lista1.dir/src/graph_generator.cpp.obj	578da2fe014a0f60
+21	687	7641329466454993	CMakeFiles/lista1.dir/src/graph_utils/csv_reader.cpp.obj	910b66826ee2b9a
+32	1073	7641329466564977	CMakeFiles/lista1.dir/src/graph_utils/graph.cpp.obj	e4b062efa94e69d1
+14	1166	7641329466384988	CMakeFiles/lista1.dir/src/main.cpp.obj	ef8d522a38283ff4
+27	1230	7641329466509986	CMakeFiles/lista1.dir/src/graph_utils/graph_generator.cpp.obj	d6ee8013c3928ee0
+1230	1471	7641329478549989	lista1.exe	9bbbf40b0457ff72
