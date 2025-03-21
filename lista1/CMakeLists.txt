@@ -10,4 +10,6 @@ add_executable(lista1 src/main.cpp
         src/graph_utils/graph_generator.cpp
         src/graph_utils/graph_generator.h
         src/graph_utils/graph.cpp
-        src/graph_utils/graph.h)
+        src/graph_utils/graph.h
+        src/ui/user_cli.cpp
+        src/ui/user_cli.h)

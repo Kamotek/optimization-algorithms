@@ -7,12 +7,23 @@
 #include "graph.h"
 
 
-std::chrono::high_resolution_clock::time_point parse_time(const std::string &time_str) {
+#include <ctime>
+#include <iomanip>
+
+std::chrono::system_clock::time_point parse_time(const std::string &time_str) {
     std::tm tm = {};
     std::istringstream ss(time_str);
+
+    // Wypełnij domyślną datę (np. 1970-01-01)
+    tm.tm_year = 70; // 1970 rok
+    tm.tm_mon = 0;   // styczeń
+    tm.tm_mday = 1;  // pierwszy dzień miesiąca
+
+    // Parsuj tylko czas HH:MM:SS
     ss >> std::get_time(&tm, "%H:%M:%S");
+
     std::time_t tt = std::mktime(&tm);
-    return std::chrono::high_resolution_clock::from_time_t(tt);
+    return std::chrono::system_clock::from_time_t(tt);
 }
 
 graph graph_generator::generate_graph(std::string row) {

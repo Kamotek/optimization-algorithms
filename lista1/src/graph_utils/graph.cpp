@@ -30,6 +30,7 @@ graph::graph(uint32_t id,
 
 std::string graph::to_str() {
     std::stringstream ss;
-    ss << "id: " << id << ", company: " << company << ", line: " << line;
+    ss << "id: " << id << ", company: " << company << ", line: " << line << ", departure_time: " << departure_time;
     return ss.str();
 }
+
