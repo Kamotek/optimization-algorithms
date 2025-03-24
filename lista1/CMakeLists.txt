@@ -22,4 +22,6 @@ add_executable(lista1 src/main.cpp
         src/graph/vertex.cpp
         src/graph/vertex.h
         src/graph/graph.cpp
-        src/graph/graph.h)
+        src/graph/graph.h
+        src/algorithms/tabu_search.cpp
+        src/algorithms/tabu_search.h)

@@ -114,85 +114,128 @@ std::vector<edge> astar_time(const std::vector<edge> &edges,
     return {};
 }
 
-
+//--
 
 /// Funkcja astar_change szuka trasy o minimalnej liczbie przesiadek.
 /// Warunkiem wejściowym jest zachowanie poprawności czasowej (nie możemy wsiąść przed aktualnym czasem).
 /// Przy zmianie linii (porównujemy e.getLine() z ostatnią linią w trasie) zwiększamy koszt o 1.
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <chrono>
+#include <string>
+
+
+
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <chrono>
+#include <string>
+
+
+
+
 std::vector<edge> astar_change(const std::vector<edge> &edges,
                                const std::string &start,
                                const std::string &end,
                                const std::chrono::system_clock::time_point &startTime) {
-    // Budujemy listę sąsiedztwa: kluczem jest przystanek początkowy
     std::unordered_map<std::string, std::vector<edge>> adj;
     for (const auto &e : edges) {
         adj[e.getStartStop()].push_back(e);
     }
 
-    // Mapa przechowująca najlepszą (najmniejszą) liczbę przesiadek dotarcia do danego przystanku
-    std::unordered_map<std::string, int> best;
-    best[start] = 0;
+    std::unordered_map<std::string, BestState> best;
+    best[start] = {0, startTime};
 
-    // Kolejka priorytetowa na stany, sortujemy po szacowanym koszcie (tu: liczbie przesiadek)
     std::priority_queue<TransferState, std::vector<TransferState>, std::greater<TransferState>> pq;
-    TransferState init{start, startTime, 0, {}, 0};  // heurystyka = 0
-    pq.push(init);
+    pq.push(TransferState{start, startTime, 0, {}, 0});
 
     while (!pq.empty()) {
         TransferState current = pq.top();
         pq.pop();
 
-        // Jeśli dotarliśmy do celu, zwracamy trasę
         if (current.stop == end) {
             return current.route;
         }
 
-        // Jeśli z tego przystanku nie wychodzą żadne krawędzie, przechodzimy dalej.
-        if (adj.find(current.stop) == adj.end())
-            continue;
+        // Sprawdź czy aktualny stan jest nadal najlepszy
+        auto currentBestIt = best.find(current.stop);
+        if (currentBestIt != best.end()) {
+            const BestState& currentBest = currentBestIt->second;
+            if (current.transfers > currentBest.transfers ||
+                (current.transfers == currentBest.transfers && current.time > currentBest.time)) {
+                continue;
+            }
+        }
 
-        // Dla każdej krawędzi wychodzącej z bieżącego przystanku:
+        // Generuj czekający stan
+        auto waitTime = current.time + std::chrono::minutes(15);
+        bool hasEdgesAfterWait = false;
+        if (adj.find(current.stop) != adj.end()) {
+            for (const auto& e : adj[current.stop]) {
+                if (e.getDepartureTime() >= waitTime) {
+                    hasEdgesAfterWait = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasEdgesAfterWait) {
+            TransferState waitState{
+                current.stop,
+                waitTime,
+                current.transfers,
+                current.route,
+                current.transfers
+            };
+
+            auto& bestForStop = best[waitState.stop];
+            if (bestForStop.transfers > waitState.transfers ||
+                (bestForStop.transfers == waitState.transfers && bestForStop.time > waitState.time)) {
+                bestForStop = {waitState.transfers, waitState.time};
+                pq.push(waitState);
+            }
+        }
+
+        if (adj.find(current.stop) == adj.end()) continue;
+
         for (const auto &e : adj[current.stop]) {
-            // Możemy wsiąść tylko, jeśli czas odjazdu jest równy lub późniejszy niż aktualny czas
             if (e.getDepartureTime() >= current.time) {
                 auto arrival = e.getArrivalTime();
-
-                // Obliczamy nowe koszty przesiadek:
-                // Jeśli dotychczasowa trasa jest pusta, czyli to pierwszy odcinek, nie liczemy przesiadki.
-                // W przeciwnym razie, sprawdzamy czy linia ostatniego odcinka jest taka sama jak obecna.
-                int additionalTransfer = 0;
-                if (!current.route.empty() && current.route.back().getLine() != e.getLine()) {
-                    additionalTransfer = 1;
-                }
+                int additionalTransfer = (!current.route.empty() && current.route.back().getLine() != e.getLine()) ? 1 : 0;
                 int newTransfers = current.transfers + additionalTransfer;
 
-                // Jeśli znaleźliśmy lepszy (mniejszy) koszt dojścia do przystanku docelowego tej krawędzi, aktualizujemy.
-                if (best.find(e.getEndStop()) == best.end() || newTransfers < best[e.getEndStop()]) {
-                    best[e.getEndStop()] = newTransfers;
+                bool updateBest = false;
+                auto it = best.find(e.getEndStop());
+                if (it == best.end()) {
+                    best[e.getEndStop()] = {newTransfers, arrival};
+                    updateBest = true;
+                } else {
+                    BestState &currentBest = it->second;
+                    if (newTransfers < currentBest.transfers ||
+                        (newTransfers == currentBest.transfers && arrival < currentBest.time)) {
+                        currentBest.transfers = newTransfers;
+                        currentBest.time = arrival;
+                        updateBest = true;
+                    }
+                }
+
+                if (updateBest) {
                     std::vector<edge> newRoute = current.route;
                     newRoute.push_back(e);
-
-                    // Heurystyka – przyjmujemy 0, bo nie mamy lepszego oszacowania minimalnych przesiadek.
-                    int h = 0;
-                    TransferState next{e.getEndStop(), arrival, newTransfers, newRoute, newTransfers + h};
-                    pq.push(next);
+                    pq.push(TransferState{e.getEndStop(), arrival, newTransfers, newRoute, newTransfers});
                 }
             }
         }
     }
 
-    // Jeśli nie znaleziono trasy, zwracamy pusty wektor.
     return {};
 }
 
-
-
-
 bool TransferState::operator>(const TransferState &other) const {
+    if (estimated == other.estimated) {
+        return time > other.time;
+    }
     return estimated > other.estimated;
 }
-
-// ---
-
-
-

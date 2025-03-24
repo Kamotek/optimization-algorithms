@@ -109,6 +109,12 @@ build CMakeFiles/lista1.dir/src/graph/graph.cpp.obj: CXX_COMPILER__lista1_unscan
   OBJECT_DIR = CMakeFiles\lista1.dir
   OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph
 
+build CMakeFiles/lista1.dir/src/algorithms/tabu_search.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/algorithms/tabu_search.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\algorithms\tabu_search.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\algorithms
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target lista1
@@ -117,7 +123,7 @@ build CMakeFiles/lista1.dir/src/graph/graph.cpp.obj: CXX_COMPILER__lista1_unscan
 #############################################
 # Link the executable lista1.exe
 
-build lista1.exe: CXX_EXECUTABLE_LINKER__lista1_Debug CMakeFiles/lista1.dir/src/main.cpp.obj CMakeFiles/lista1.dir/src/io_handling/csv_reader.cpp.obj CMakeFiles/lista1.dir/src/graph/graph_generator.cpp.obj CMakeFiles/lista1.dir/src/graph/edge.cpp.obj CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj CMakeFiles/lista1.dir/src/algorithms_utils/time_calc.cpp.obj CMakeFiles/lista1.dir/src/algorithms/astar.cpp.obj CMakeFiles/lista1.dir/src/algorithms/dijkstra.cpp.obj CMakeFiles/lista1.dir/src/graph/vertex.cpp.obj CMakeFiles/lista1.dir/src/graph/graph.cpp.obj
+build lista1.exe: CXX_EXECUTABLE_LINKER__lista1_Debug CMakeFiles/lista1.dir/src/main.cpp.obj CMakeFiles/lista1.dir/src/io_handling/csv_reader.cpp.obj CMakeFiles/lista1.dir/src/graph/graph_generator.cpp.obj CMakeFiles/lista1.dir/src/graph/edge.cpp.obj CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj CMakeFiles/lista1.dir/src/algorithms_utils/time_calc.cpp.obj CMakeFiles/lista1.dir/src/algorithms/astar.cpp.obj CMakeFiles/lista1.dir/src/algorithms/dijkstra.cpp.obj CMakeFiles/lista1.dir/src/graph/vertex.cpp.obj CMakeFiles/lista1.dir/src/graph/graph.cpp.obj CMakeFiles/lista1.dir/src/algorithms/tabu_search.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\lista1.dir

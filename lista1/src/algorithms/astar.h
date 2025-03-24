@@ -74,6 +74,10 @@ struct TransferState {
     bool operator>(const TransferState &other) const;
 };
 
+struct BestState {
+    int transfers;
+    std::chrono::system_clock::time_point time;
+};
 
 
 
