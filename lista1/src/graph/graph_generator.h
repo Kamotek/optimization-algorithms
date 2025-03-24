@@ -6,20 +6,20 @@
 #define GRAPH_GENERATOR_H
 #include <vector>
 
-#include "graph.h"
+#include "edge.h"
 
 
 class graph_generator {
 private:
-    std::vector<graph> graphs;
+    std::vector<edge> graphs;
 
-    static graph generate_graph(std::string row);
+    static edge generate_graph(std::string row);
     public:
     graph_generator(const std::vector<std::string> &data_rows);
-    std::vector<graph>get_graphs();
+    std::vector<edge>get_graphs();
 };
 
-inline std::vector<graph> graph_generator::get_graphs() {
+inline std::vector<edge> graph_generator::get_graphs() {
     return graphs;
 }
 

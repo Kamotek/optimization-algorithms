@@ -55,29 +55,59 @@ build CMakeFiles/lista1.dir/src/main.cpp.obj: CXX_COMPILER__lista1_unscanned_Deb
   OBJECT_DIR = CMakeFiles\lista1.dir
   OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src
 
-build CMakeFiles/lista1.dir/src/graph_utils/csv_reader.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph_utils/csv_reader.cpp || cmake_object_order_depends_target_lista1
-  DEP_FILE = CMakeFiles\lista1.dir\src\graph_utils\csv_reader.cpp.obj.d
+build CMakeFiles/lista1.dir/src/io_handling/csv_reader.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/io_handling/csv_reader.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\io_handling\csv_reader.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\lista1.dir
-  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph_utils
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\io_handling
 
-build CMakeFiles/lista1.dir/src/graph_utils/graph_generator.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph_utils/graph_generator.cpp || cmake_object_order_depends_target_lista1
-  DEP_FILE = CMakeFiles\lista1.dir\src\graph_utils\graph_generator.cpp.obj.d
+build CMakeFiles/lista1.dir/src/graph/graph_generator.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph/graph_generator.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\graph\graph_generator.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\lista1.dir
-  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph_utils
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph
 
-build CMakeFiles/lista1.dir/src/graph_utils/graph.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph_utils/graph.cpp || cmake_object_order_depends_target_lista1
-  DEP_FILE = CMakeFiles\lista1.dir\src\graph_utils\graph.cpp.obj.d
+build CMakeFiles/lista1.dir/src/graph/edge.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph/edge.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\graph\edge.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\lista1.dir
-  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph_utils
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph
 
 build CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/ui/user_cli.cpp || cmake_object_order_depends_target_lista1
   DEP_FILE = CMakeFiles\lista1.dir\src\ui\user_cli.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\lista1.dir
   OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\ui
+
+build CMakeFiles/lista1.dir/src/algorithms_utils/time_calc.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/algorithms_utils/time_calc.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\algorithms_utils\time_calc.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\algorithms_utils
+
+build CMakeFiles/lista1.dir/src/algorithms/astar.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/algorithms/astar.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\algorithms\astar.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\algorithms
+
+build CMakeFiles/lista1.dir/src/algorithms/dijkstra.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/algorithms/dijkstra.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\algorithms\dijkstra.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\algorithms
+
+build CMakeFiles/lista1.dir/src/graph/vertex.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph/vertex.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\graph\vertex.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph
+
+build CMakeFiles/lista1.dir/src/graph/graph.cpp.obj: CXX_COMPILER__lista1_unscanned_Debug E$:/Nauka/SIITW/lista1/src/graph/graph.cpp || cmake_object_order_depends_target_lista1
+  DEP_FILE = CMakeFiles\lista1.dir\src\graph\graph.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\lista1.dir
+  OBJECT_FILE_DIR = CMakeFiles\lista1.dir\src\graph
 
 
 # =============================================================================
@@ -87,7 +117,7 @@ build CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj: CXX_COMPILER__lista1_unscan
 #############################################
 # Link the executable lista1.exe
 
-build lista1.exe: CXX_EXECUTABLE_LINKER__lista1_Debug CMakeFiles/lista1.dir/src/main.cpp.obj CMakeFiles/lista1.dir/src/graph_utils/csv_reader.cpp.obj CMakeFiles/lista1.dir/src/graph_utils/graph_generator.cpp.obj CMakeFiles/lista1.dir/src/graph_utils/graph.cpp.obj CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj
+build lista1.exe: CXX_EXECUTABLE_LINKER__lista1_Debug CMakeFiles/lista1.dir/src/main.cpp.obj CMakeFiles/lista1.dir/src/io_handling/csv_reader.cpp.obj CMakeFiles/lista1.dir/src/graph/graph_generator.cpp.obj CMakeFiles/lista1.dir/src/graph/edge.cpp.obj CMakeFiles/lista1.dir/src/ui/user_cli.cpp.obj CMakeFiles/lista1.dir/src/algorithms_utils/time_calc.cpp.obj CMakeFiles/lista1.dir/src/algorithms/astar.cpp.obj CMakeFiles/lista1.dir/src/algorithms/dijkstra.cpp.obj CMakeFiles/lista1.dir/src/graph/vertex.cpp.obj CMakeFiles/lista1.dir/src/graph/graph.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\lista1.dir

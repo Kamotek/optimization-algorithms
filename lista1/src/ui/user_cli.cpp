@@ -35,8 +35,8 @@ user_cli::user_cli() {
         std::chrono::high_resolution_clock::time_point tp(duration_since_midnight);
         set_start_time(tp);
     } else {
-        std::cerr << "Niepoprawny format czasu. Ustawiam bieżący czas." << std::endl;
-        set_start_time(std::chrono::high_resolution_clock::now());
+        std::cerr << "Niepoprawny format czasu." << std::endl;
+        //set_start_time(std::chrono::high_resolution_clock::now());
     }
 
     std::cout << "Wybierz kryterium (t - najkrótszy dojazd, p - najmniej przesiadek): " << std::endl;

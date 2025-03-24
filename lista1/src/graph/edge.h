@@ -2,16 +2,16 @@
 // Created by kamil on 19.03.2025.
 //
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef EDGE_H
+#define EDGE_H
 #include <chrono>
 #include <string>
 
 
-class graph {
+class edge {
     typedef std::chrono::system_clock::time_point time_point;
 public:
-    graph(uint32_t id,
+    edge(uint32_t id,
         const std::string &company,
         const std::string &line,
         const time_point &departure_time,
@@ -23,7 +23,7 @@ public:
         double end_stop_lat,
         double end_stop_lon);
 
-    std::string to_str();
+    std::string to_str() const;
 
     //gettery
     uint32_t getId() const { return id; }
@@ -68,4 +68,4 @@ private:
 
 
 
-#endif //GRAPH_H
+#endif //EDGE_H

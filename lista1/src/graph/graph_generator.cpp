@@ -4,7 +4,7 @@
 
 #include "graph_generator.h"
 
-#include "graph.h"
+#include "edge.h"
 
 
 #include <ctime>
@@ -14,19 +14,40 @@ std::chrono::system_clock::time_point parse_time(const std::string &time_str) {
     std::tm tm = {};
     std::istringstream ss(time_str);
 
-    // Wypełnij domyślną datę (np. 1970-01-01)
-    tm.tm_year = 70; // 1970 rok
-    tm.tm_mon = 0;   // styczeń
-    tm.tm_mday = 1;  // pierwszy dzień miesiąca
+    // Ustawienie daty z użyciem aktualnego dnia:
+    const auto now = std::chrono::system_clock::now();
+    const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
+    tm.tm_year = static_cast<int>(ymd.year()) - 1900;  // rok od 1900
+    tm.tm_mon  = static_cast<unsigned>(ymd.month()) - 1; // miesiące 0-11
+    tm.tm_mday = static_cast<unsigned>(ymd.day());       // dzień miesiąca
 
-    // Parsuj tylko czas HH:MM:SS
-    ss >> std::get_time(&tm, "%H:%M:%S");
+    // Ręczne parsowanie formatu HH:MM:SS
+    int hours, minutes, seconds;
+    char sep1, sep2;
+    if (!(ss >> hours >> sep1 >> minutes >> sep2 >> seconds)) {
+        throw std::runtime_error("Błąd parsowania czasu");
+    }
+    if (sep1 != ':' || sep2 != ':') {
+        throw std::runtime_error("Niepoprawny format czasu");
+    }
+
+    // Jeśli godzina jest równa 24, traktujemy to jako 00:XX:XX następnego dnia.
+    if (hours == 24) {
+        hours = 0;
+        tm.tm_mday += 1; // przesunięcie dnia
+    }
+    // Możesz też rozważyć sprawdzenie, czy hours > 23 dla bardziej ogólnego podejścia
+
+    tm.tm_hour = hours;
+    tm.tm_min  = minutes;
+    tm.tm_sec  = seconds;
 
     std::time_t tt = std::mktime(&tm);
     return std::chrono::system_clock::from_time_t(tt);
 }
 
-graph graph_generator::generate_graph(std::string row) {
+
+edge graph_generator::generate_graph(std::string row) {
     std::stringstream ss(row);
     char delimiter = ',';
 
@@ -48,7 +69,7 @@ graph graph_generator::generate_graph(std::string row) {
     double end_stop_lat = std::stod(splitted[9]);
     double end_stop_lon = std::stod(splitted[10]);
 
-    return graph(id, company, line, departure_time, arrival_time,
+    return edge(id, company, line, departure_time, arrival_time,
                  start_stop, end_stop, start_stop_lat, start_stop_lon,
                  end_stop_lat, end_stop_lon);
 }
