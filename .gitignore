@@ -1,2 +1,3 @@
 lista1/data/connection_graph.csv
-lista1/cmake-build-debug/
+lista1/cmake-build-debug
+lista1/.idea
