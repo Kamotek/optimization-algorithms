@@ -3,6 +3,7 @@
 //
 #include "csv_reader.h"
 
+#include <codecvt>
 #include <iostream>
 
 
@@ -13,8 +14,7 @@ std::vector<std::string> resultData;
     if (!file.is_open()) {
         std::cerr << "File " << fileName << " does not exist." << std::endl;
     }
-
-    std::string line;
+    file.imbue(std::locale(file.getloc(), new std::codecvt_utf8<wchar_t>));    std::string line;
     while (std::getline(file, line)) {
         std::vector<std::string> row;
         std::stringstream ss(line);

@@ -5,26 +5,37 @@
 #ifndef USER_CLI_H
 #define USER_CLI_H
 
-#include <chrono>
+// user_cli.h
+#pragma once
 #include <string>
+#include <vector>
+#include <chrono>
+#include "../graph/edge.h"
+#include <windows.h>
 
 class user_cli {
-private:
-    std::string start_stop;
-    std::string end_stop;
-    char optimization_criteria{};
-    std::chrono::high_resolution_clock::time_point start_time;
-
 public:
     user_cli();
-    std::string get_start_stop();
-    std::string get_end_stop();
-    char get_optimization_criteria();
-    std::chrono::high_resolution_clock::time_point get_start_time();
-    void set_start_stop(std::string start_stop);
-    void set_end_stop(std::string end_stop);
-    void set_optimization_criteria(char optimization_criteria);
-    void set_start_time(std::chrono::high_resolution_clock::time_point start_time);
+    std::vector<edge> execute(const std::vector<edge>& edges);
+
+    // Gettery, jeśli potrzebne
+    std::string get_start_stop() const;
+    std::string get_end_stop() const;
+    char get_optimization_criteria() const;
+    std::chrono::system_clock::time_point get_start_time() const;
+    int get_algorithm_choice() const;
+    std::vector<std::string> get_excluded_stops() const;
+
+private:
+    void gatherBasicData();
+    void gatherAlgorithmChoice();
+
+    std::string start_stop;
+    std::string end_stop;
+    char optimization_criteria; // 't' - czasowe, 'p' - przesiadkowe
+    std::chrono::system_clock::time_point start_time;
+    int algorithm_choice; // 1 - Dijkstra, 2 - A*, 3 - Tabu Search
+    std::vector<std::string> excluded_stops;
 };
 
 #endif //USER_CLI_H
