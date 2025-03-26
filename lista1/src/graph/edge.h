@@ -7,6 +7,8 @@
 #include <chrono>
 #include <string>
 
+// przykladowa linia wycieta z pliku csv
+//  4,MPK Autobusy,A,20:57:00,20:59:00,Bałtycka,Broniewskiego,51.13663187,17.0306168,51.13585101,17.03738306
 
 class edge {
     typedef std::chrono::system_clock::time_point time_point;
@@ -52,7 +54,7 @@ public:
     void setEndStopLon(double newLon) { end_stop_lon = newLon; }
 
 private:
-    //  4,MPK Autobusy,A,20:57:00,20:59:00,Bałtycka,Broniewskiego,51.13663187,17.0306168,51.13585101,17.03738306
+
     std::uint32_t id;
     std::string company;
     std::string line;
