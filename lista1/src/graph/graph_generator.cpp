@@ -14,14 +14,12 @@ std::chrono::system_clock::time_point parse_time(const std::string &time_str) {
     std::tm tm = {};
     std::istringstream ss(time_str);
 
-    // Ustawienie daty z użyciem aktualnego dnia:
     const auto now = std::chrono::system_clock::now();
     const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
     tm.tm_year = static_cast<int>(ymd.year()) - 1900;  // rok od 1900
     tm.tm_mon  = static_cast<unsigned>(ymd.month()) - 1; // miesiące 0-11
     tm.tm_mday = static_cast<unsigned>(ymd.day());       // dzień miesiąca
 
-    // Ręczne parsowanie formatu HH:MM:SS
     int hours, minutes, seconds;
     char sep1, sep2;
     if (!(ss >> hours >> sep1 >> minutes >> sep2 >> seconds)) {
@@ -31,12 +29,10 @@ std::chrono::system_clock::time_point parse_time(const std::string &time_str) {
         throw std::runtime_error("Niepoprawny format czasu");
     }
 
-    // Jeśli godzina jest równa 24, traktujemy to jako 00:XX:XX następnego dnia.
     if (hours == 24) {
         hours = 0;
-        tm.tm_mday += 1; // przesunięcie dnia
+        tm.tm_mday += 1;
     }
-    // Możesz też rozważyć sprawdzenie, czy hours > 23 dla bardziej ogólnego podejścia
 
     tm.tm_hour = hours;
     tm.tm_min  = minutes;
