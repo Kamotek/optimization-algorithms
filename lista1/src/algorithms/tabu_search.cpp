@@ -1,12 +1,18 @@
-//
-// Created by kamil on 24.03.2025.
-//
+/**
+ * @file tabu_search.cpp
+ * @brief Implementacja algorytmu Tabu Search wraz z funkcjami pomocniczymi.
+ *
+ * Ten plik zawiera implementację funkcji wspomagających dla algorytmu Tabu Search,
+ * m.in. funkcje generujące sąsiadów, liczące przesiadki oraz budujące trasę, a także
+ * główną funkcję tabu_search.
+ */
 
 #include "tabu_search.h"
-#include "astar.h"  // zawiera deklarację funkcji astar_change
+#include "astar.h"  // Zawiera deklarację funkcji astar_change
 #include <algorithm>
 #include <climits>
 #include <unordered_set>
+#include <deque>
 #include <queue>
 #include <chrono>
 #include <string>
@@ -16,7 +22,7 @@
 using namespace std;
 using namespace chrono;
 
-// Definicja operatora haszującego wektor stringów
+
 size_t VectorHash::operator()(const vector<string>& v) const {
     hash<string> hasher;
     size_t seed = 0;
@@ -26,7 +32,7 @@ size_t VectorHash::operator()(const vector<string>& v) const {
     return seed;
 }
 
-// Generuje sąsiadów dla danego porządku przystanków poprzez zamianę par elementów
+
 vector<vector<string>> generate_neighbors(const vector<string>& current) {
     vector<vector<string>> neighbors;
     for (size_t i = 0; i < current.size(); ++i) {
@@ -39,8 +45,7 @@ vector<vector<string>> generate_neighbors(const vector<string>& current) {
     return neighbors;
 }
 
-// Liczy liczbę przesiadek na trasie.
-// Zmiana linii (porównywana za pomocą metody getLine()) traktowana jest jako przesiadka.
+
 int count_transfers(const vector<edge>& route) {
     if (route.empty()) return 0;
     int transfers = 0;
@@ -54,9 +59,7 @@ int count_transfers(const vector<edge>& route) {
     return transfers;
 }
 
-// Buduje pełną trasę, łącząc segmenty wyznaczone funkcją astar_change.
-// Kolejne segmenty wyznaczane są między: start -> kolejny wymagany przystanek,
-// aż do przystanku docelowego.
+
 vector<edge> construct_route(const vector<string>& order,
                              const vector<edge>& edges,
                              const string& start,
@@ -66,86 +69,109 @@ vector<edge> construct_route(const vector<string>& order,
     string current_stop = start;
     auto current_time = startTime;
 
-    // Przechodzimy przez kolejne przystanki w zadanej kolejności
+    // Iteracja po zadanej kolejności przystanków
     for (const auto& next_stop : order) {
-        auto segment = astar_change(edges, current_stop, next_stop, current_time);
-        if (segment.empty()) return {}; // brak połączenia
+        auto segment = astar_change(edges, current_stop, next_stop, current_time).first;
+        if (segment.empty()) return {}; // Brak połączenia dla danego segmentu
         full_route.insert(full_route.end(), segment.begin(), segment.end());
         current_stop = next_stop;
         current_time = segment.back().getArrivalTime();
     }
 
-    // Ostatni segment: z ostatniego przystanku wymaganego do przystanku docelowego
-    auto final_segment = astar_change(edges, current_stop, end, current_time);
+    // Łączymy ostatni segment od ostatniego przystanku wymaganego do docelowego
+    auto final_segment = astar_change(edges, current_stop, end, current_time).first;
     if (final_segment.empty()) return {};
     full_route.insert(full_route.end(), final_segment.begin(), final_segment.end());
 
     return full_route;
 }
 
-// Oblicza koszt trasy jako liczbę przesiadek dla danego porządku odwiedzanych przystanków.
-// Jeżeli trasy nie uda się zbudować, zwracamy INT_MAX.
-int calculate_cost(const vector<string>& order,
-                   const vector<edge>& edges,
-                   const string& start,
-                   const string& end,
-                   const system_clock::time_point& startTime) {
+
+double calculate_cost(const vector<string>& order,
+                      const vector<edge>& edges,
+                      const string& start,
+                      const string& end,
+                      const system_clock::time_point& startTime) {
     auto route = construct_route(order, edges, start, end, startTime);
     return route.empty() ? INT_MAX : count_transfers(route);
 }
 
-// Główna funkcja tabu_search, wyznaczająca trasę o minimalnej liczbie przesiadek.
-// Jeśli lista required_stops jest pusta, funkcja wywołuje astar_change dla bezpośredniego połączenia.
-vector<edge> tabu_search(const vector<edge>& edges,
-                         const string& start,
-                         const string& end,
-                         const vector<string>& required_stops,
-                         const system_clock::time_point& startTime,
-                         int max_iterations) {
-    // Jeżeli nie podano przystanków pośrednich, szukamy trasy bez zmian (astar_change)
+
+pair<vector<edge>, double> tabu_search(const vector<edge>& edges,
+                                         const string& start,
+                                         const string& end,
+                                         const vector<string>& required_stops,
+                                         const system_clock::time_point& startTime,
+                                         int max_iterations) {
+    // Jeżeli nie podano przystanków pośrednich, szukamy bezpośredniej trasy (astar_change)
     if (required_stops.empty()) {
-        return astar_change(edges, start, end, startTime);
+        auto route = astar_change(edges, start, end, startTime).first;
+        double cost = route.empty() ? INT_MAX : count_transfers(route);
+        return {route, cost};
     }
 
+    // Inicjalizacja bieżącego porządku i globalnego najlepszego rozwiązania
     vector<string> current_order = required_stops;
     vector<string> best_order = current_order;
-    vector<edge> best_route;
-    int best_cost = calculate_cost(current_order, edges, start, end, startTime);
+    vector<edge> best_route = construct_route(best_order, edges, start, end, startTime);
+    double best_cost = best_route.empty() ? INT_MAX : count_transfers(best_route);
 
-    unordered_set<size_t> tabu_list;
     VectorHash hash_fn;
+    // Implementacja listy tabu jako kolejki FIFO
+    deque<size_t> tabu_queue;
+    unordered_set<size_t> tabu_set;
+    // Rozmiar listy tabu zależy od liczby przystanków – ustawiony na 2 * liczba przystanków
+    size_t tabu_max_size = 2 * required_stops.size();
 
     for (int iter = 0; iter < max_iterations; ++iter) {
         auto neighbors = generate_neighbors(current_order);
-        int current_best_cost = INT_MAX;
+        double current_best_cost = INT_MAX;
         vector<string> current_best_order;
 
-        // Przeglądamy wszystkich sąsiadów (różne permutacje kolejności przystanków)
+        // Przeglądanie wszystkich sąsiadów (pełna permutacja)
         for (const auto& neighbor : neighbors) {
-            size_t hash = hash_fn(neighbor);
-            if (tabu_list.count(hash)) continue;
-
+            size_t neighbor_hash = hash_fn(neighbor);
             int cost = calculate_cost(neighbor, edges, start, end, startTime);
+
+            // Warunek aspiracji: jeśli sąsiad poprawia globalny wynik, wybieramy go natychmiast
+            if (cost < best_cost) {
+                current_best_cost = cost;
+                current_best_order = neighbor;
+                break;
+            }
+
+            // Pomijamy rozwiązania, które znajdują się na liście tabu
+            if (tabu_set.find(neighbor_hash) != tabu_set.end()) continue;
+
             if (cost < current_best_cost) {
                 current_best_cost = cost;
                 current_best_order = neighbor;
             }
         }
 
-        // Aktualizacja najlepszej znalezionej trasy, jeśli poprawiono koszt
+        // Jeśli nie znaleziono żadnego poprawiającego sąsiada, kończymy iteracje
+        if (current_best_cost == INT_MAX) break;
+
+        // Aktualizacja globalnie najlepszego rozwiązania
         if (current_best_cost < best_cost) {
             best_cost = current_best_cost;
             best_order = current_best_order;
             best_route = construct_route(best_order, edges, start, end, startTime);
         }
 
-        // Jeżeli nie znaleziono lepszej permutacji, przerywamy iteracje
-        if (current_best_cost == INT_MAX) break;
+        // Aktualizacja listy tabu – dodajemy bieżący porządek i usuwamy najstarszy, jeśli przekroczono limit
+        size_t current_hash = hash_fn(current_order);
+        tabu_queue.push_back(current_hash);
+        tabu_set.insert(current_hash);
+        if (tabu_queue.size() > tabu_max_size) {
+            size_t old_hash = tabu_queue.front();
+            tabu_queue.pop_front();
+            tabu_set.erase(old_hash);
+        }
 
-        // Uaktualniamy bieżący porządek i dodajemy go do listy tabu
+        // Uaktualniamy bieżący porządek do najlepszego znalezionego rozwiązania w tej iteracji
         current_order = current_best_order;
-        tabu_list.insert(hash_fn(current_order));
     }
 
-    return best_route;
+    return {best_route, best_cost};
 }

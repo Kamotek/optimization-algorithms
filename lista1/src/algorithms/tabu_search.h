@@ -13,7 +13,16 @@
 #include "../graph/edge.h"
 #include "astar.h"
 
-// Struktura haszująca wektor stringów
+/**
+ * @brief Funktor obliczający wartość skrótu (hash) dla wektora stringów.
+ *
+ * Funkcja wykorzystuje std::hash<string> oraz technikę mieszania bitów, aby
+ * uzyskać unikalną wartość haszującą dla danego wektora. Umożliwia to
+ * wykorzystanie std::vector<std::string> jako klucza w strukturach takich jak unordered_set.
+ *
+ * @param v Wektor stringów do zahaszowania.
+ * @return size_t Obliczona wartość haszująca.
+ */
 struct VectorHash {
     size_t operator()(const std::vector<std::string>& v) const;
 };
@@ -21,30 +30,80 @@ struct VectorHash {
 // Generuje sąsiadów dla danego porządku przystanków
 std::vector<std::vector<std::string>> generate_neighbors(const std::vector<std::string>& current);
 
-// Liczy liczbę przesiadek w trasie (zmiana linii traktowana jako przesiadka)
+/**
+ * @brief Oblicza liczbę przesiadek na trasie.
+ *
+ * Funkcja iteruje po trasie reprezentowanej przez wektor obiektów edge i liczy
+ * przesiadki, przy czym zmiana linii (porównywana za pomocą metody getLine()) jest
+ * uznawana za przesiadkę.
+ *
+ * @param route Wektor krawędzi reprezentujący trasę.
+ * @return int Liczba przesiadek na trasie.
+ */
 int count_transfers(const std::vector<edge>& route);
 
-// Buduje pełną trasę na podstawie kolejności odwiedzanych przystanków
+/**
+ * @brief Buduje pełną trasę łącząc segmenty wyznaczone funkcją astar_change.
+ *
+ * Funkcja przetwarza kolejno podany porządek przystanków, wyznaczając segmenty trasy
+ * między przystankiem początkowym a kolejnymi wymaganymi przystankami, aż do przystanku docelowego.
+ * Jeśli dla któregoś segmentu nie uda się znaleźć połączenia, zwracany jest pusty wektor.
+ *
+ * @param order Kolejność odwiedzanych przystanków.
+ * @param edges Wektor krawędzi wykorzystywany przez funkcję astar_change.
+ * @param start Przystanek początkowy.
+ * @param end Przystanek docelowy.
+ * @param startTime Czas rozpoczęcia podróży.
+ * @return std::vector<edge> Zbudowana trasa.
+ */
 std::vector<edge> construct_route(const std::vector<std::string>& order,
                                   const std::vector<edge>& edges,
                                   const std::string& start,
                                   const std::string& end,
                                   const std::chrono::system_clock::time_point& startTime);
 
-// Oblicza koszt (liczbę przesiadek) trasy wyznaczonej na podstawie danego porządku przystanków
-int calculate_cost(const std::vector<std::string>& order,
+/**
+ * @brief Oblicza koszt trasy na podstawie liczby przesiadek.
+ *
+ * Funkcja buduje trasę przy pomocy funkcji construct_route, a następnie
+ * wyznacza koszt (liczbę przesiadek) używając count_transfers. Jeśli trasy
+ * nie uda się wyznaczyć, zwraca INT_MAX.
+ *
+ * @param order Kolejność przystanków do odwiedzenia.
+ * @param edges Wektor krawędzi.
+ * @param start Przystanek początkowy.
+ * @param end Przystanek docelowy.
+ * @param startTime Czas rozpoczęcia podróży.
+ * @return double Koszt trasy (liczba przesiadek) lub INT_MAX, jeśli trasa nie istnieje.
+ */
+double calculate_cost(const std::vector<std::string>& order,
                    const std::vector<edge>& edges,
                    const std::string& start,
                    const std::string& end,
                    const std::chrono::system_clock::time_point& startTime);
 
-// Główna funkcja tabu_search, wyznaczająca trasę o minimalnej liczbie przesiadek.
-// Jeśli lista required_stops jest pusta, wywołuje funkcję astar_change.
-std::vector<edge> tabu_search(const std::vector<edge>& edges,
-                              const std::string& start,
-                              const std::string& end,
-                              const std::vector<std::string>& required_stops,
-                              const std::chrono::system_clock::time_point& startTime,
-                              int max_iterations = 100);
+/**
+ * @brief Główna funkcja algorytmu Tabu Search.
+ *
+ * Funkcja wyszukuje trasę o minimalnej liczbie przesiadek przy zadanym porządku przystanków.
+ * Jeśli nie podano przystanków pośrednich, wykorzystuje bezpośrednią metodę astar_change.
+ * W kolejnych iteracjach generowane są sąsiednie rozwiązania (permutacje porządku przystanków),
+ * a następnie wybierany jest najlepszy kandydat, z uwzględnieniem listy tabu (zapobiegającej cyklom)
+ * oraz warunku aspiracji (akceptującego lepsze globalnie rozwiązania).
+ *
+ * @param edges Wektor krawędzi.
+ * @param start Przystanek początkowy.
+ * @param end Przystanek docelowy.
+ * @param required_stops Lista przystanków pośrednich do odwiedzenia.
+ * @param startTime Czas rozpoczęcia podróży.
+ * @param max_iterations Maksymalna liczba iteracji algorytmu.
+ * @return std::pair<std::vector<edge>, double> Parę zawierającą najlepszą znalezioną trasę oraz jej koszt.
+ */
+std::pair<std::vector<edge>, double> tabu_search(const std::vector<edge>& edges,
+                                                 const std::string& start,
+                                                 const std::string& end,
+                                                 const std::vector<std::string>& required_stops,
+                                                 const std::chrono::system_clock::time_point& startTime,
+                                                 int max_iterations = 100);
 
 #endif // TABU_SEARCH_H
