@@ -27,7 +27,16 @@ struct VectorHash {
     size_t operator()(const std::vector<std::string>& v) const;
 };
 
-// Generuje sąsiadów dla danego porządku przystanków
+/**
+ * @brief Generuje sąsiadów danego porządku przystanków.
+ *
+ * Funkcja tworzy wszystkie możliwe permutacje uzyskiwane przez zamianę miejscami
+ * par elementów wektora. Każda taka permutacja jest potencjalnym kandydatem na
+ * lepsze rozwiązanie w ramach algorytmu Tabu Search.
+ *
+ * @param current Wektor reprezentujący aktualny porządek przystanków.
+ * @return std::vector<std::vector<std::string>> Lista wygenerowanych sąsiadów.
+ */
 std::vector<std::vector<std::string>> generate_neighbors(const std::vector<std::string>& current);
 
 /**
@@ -91,6 +100,7 @@ double calculate_cost(const std::vector<std::string>& order,
  * a następnie wybierany jest najlepszy kandydat, z uwzględnieniem listy tabu (zapobiegającej cyklom)
  * oraz warunku aspiracji (akceptującego lepsze globalnie rozwiązania).
  *
+ * @param adj Wygenerowany graf
  * @param edges Wektor krawędzi.
  * @param start Przystanek początkowy.
  * @param end Przystanek docelowy.
@@ -99,11 +109,21 @@ double calculate_cost(const std::vector<std::string>& order,
  * @param max_iterations Maksymalna liczba iteracji algorytmu.
  * @return std::pair<std::vector<edge>, double> Parę zawierającą najlepszą znalezioną trasę oraz jej koszt.
  */
-std::pair<std::vector<edge>, double> tabu_search(const std::vector<edge>& edges,
+std::pair<std::vector<edge>, double> tabu_search(std::unordered_map<std::string, std::vector<edge>> &adj,
+                                                 const std::vector<edge>& edges,
                                                  const std::string& start,
                                                  const std::string& end,
                                                  const std::vector<std::string>& required_stops,
                                                  const std::chrono::system_clock::time_point& startTime,
                                                  int max_iterations = 100);
+
+std::pair<std::vector<edge>, double> tabu_search_change(
+    std::unordered_map<std::string, std::vector<edge>> &adj,
+    const std::vector<edge> &edges,
+    const std::string &start,
+    const std::string &end,
+    const std::vector<std::string> &required_stops,
+    const std::chrono::system_clock::time_point &startTime,
+    int max_iterations);
 
 #endif // TABU_SEARCH_H

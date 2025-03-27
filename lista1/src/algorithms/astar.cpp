@@ -4,6 +4,8 @@
 
 #include "astar.h"
 
+#include <unordered_set>
+
 
 // Przyjmujemy, że struktura edge jest zdefiniowana podobnie jak w poprzednich fragmentach
 // i posiada metody:
@@ -30,7 +32,7 @@ double haversine(double lat1, double lon1, double lat2, double lon2) {
 std::chrono::system_clock::duration heuristic(const std::string &current,
                                                 const std::string &target,
                                                 const std::vector<edge> &edges) {
-    // Pomocnicza lambda zwracająca współrzędne przystanku (jeśli znajdzie pierwszy pasujący edge)
+    // Pomocnicza funkcja zwracająca współrzędne przystanku (jeśli znajdzie pierwszy pasujący edge)
     auto getCoordinates = [&edges](const std::string &stop) -> std::pair<double, double> {
         for (const auto &e : edges) {
             if (e.getStartStop() == stop) {
@@ -47,6 +49,30 @@ std::chrono::system_clock::duration heuristic(const std::string &current,
     auto [lat2, lon2] = getCoordinates(target);
     double distance = haversine(lat1, lon1, lat2, lon2); // w km
     double seconds = (distance / 30.0) * 3600.0;
+    const double TRANSFER_PENALTY = 300.0; // 5 minut kary za przesiadkę
+
+    std::unordered_set<std::string> current_lines;
+    std::unordered_set<std::string> target_lines;
+
+    for (const auto &e : edges) {
+        if (e.getStartStop() == current || e.getEndStop() == current) current_lines.insert(e.getLine());
+        if (e.getStartStop() == target || e.getEndStop() == target) target_lines.insert(e.getLine());
+    }
+
+    // Sprawdź przecięcie zbiorów linii
+    bool shares_line = false;
+    for (const auto &line : current_lines) {
+        if (target_lines.count(line)) {
+            shares_line = true;
+            break;
+        }
+    }
+
+    // Dodatkowa kara jeśli nie ma wspólnej linii
+    if (!shares_line) {
+        seconds += TRANSFER_PENALTY * 2; // 10 minut
+    }
+
     return std::chrono::seconds(static_cast<int>(seconds));
 }
 
@@ -57,16 +83,13 @@ bool AStarState::operator>(const AStarState &other) const {
 
 
 // Funkcja astar_time analogiczna do dijkstra_time, lecz używająca algorytmu A* z heurystyką.
-std::pair<std::vector<edge>, double> astar_time(const std::vector<edge> &edges,
-                                                const std::string &start,
-                                                const std::string &end,
-                                                const std::chrono::system_clock::time_point &startTime) {
-    // Lista sąsiedztwa – grupujemy krawędzie według przystanków początkowych
-    std::unordered_map<std::string, std::vector<edge>> adj;
-    for (const auto &e : edges) {
-        adj[e.getStartStop()].push_back(e);
-    }
-
+std::pair<std::vector<edge>, double> astar_time(
+    const std::unordered_map<std::string, std::vector<edge>>& adj,
+    const std::vector<edge>& edges, // lista krawędzi potrzebna do obliczeń heurystyki
+    const std::string &start,
+    const std::string &end,
+    const std::chrono::system_clock::time_point &startTime)
+{
     // Najlepszy czas dojścia do danego przystanku
     std::unordered_map<std::string, std::chrono::system_clock::time_point> best;
     best[start] = startTime;
@@ -88,11 +111,12 @@ std::pair<std::vector<edge>, double> astar_time(const std::vector<edge> &edges,
             return {current.route, cost};
         }
 
+        // Jeżeli dla danego przystanku nie mamy żadnych krawędzi, pomijamy iterację.
         if (adj.find(current.stop) == adj.end()) {
             continue;
         }
 
-        for (const auto &e : adj[current.stop]) {
+        for (const auto &e : adj.at(current.stop)) {
             // Wsiadamy tylko, gdy czas odjazdu nie jest wcześniejszy niż bieżący czas
             if (e.getDepartureTime() >= current.time) {
                 auto arrival = e.getArrivalTime();
@@ -113,6 +137,7 @@ std::pair<std::vector<edge>, double> astar_time(const std::vector<edge> &edges,
     return {{}, -1.0};
 }
 
+
 //--
 
 /// Funkcja astar_change szuka trasy o minimalnej liczbie przesiadek.
@@ -120,16 +145,13 @@ std::pair<std::vector<edge>, double> astar_time(const std::vector<edge> &edges,
 /// Przy zmianie linii (porównujemy e.getLine() z ostatnią linią w trasie) zwiększamy koszt o 1.
 
 
-std::pair<std::vector<edge>, double> astar_change(const std::vector<edge> &edges,
-                                               const std::string &start,
-                                               const std::string &end,
-                                               const std::chrono::system_clock::time_point &startTime) {
-    // Budujemy listę sąsiedztwa
-    std::unordered_map<std::string, std::vector<edge>> adj;
-    for (const auto &e : edges) {
-        adj[e.getStartStop()].push_back(e);
-    }
-
+std::pair<std::vector<edge>, double> astar_change(
+    std::unordered_map<std::string, std::vector<edge>>& adj,
+    const std::vector<edge>& edges, // lista krawędzi, opcjonalnie – przydatna przy heurystyce czy debugowaniu
+    const std::string &start,
+    const std::string &end,
+    const std::chrono::system_clock::time_point &startTime)
+{
     // Dla każdego przystanku przechowujemy najlepszy (minimalny) stan: liczba przesiadek oraz czas dojścia
     std::unordered_map<std::string, BestState> best;
     best[start] = {0, startTime};
@@ -155,11 +177,11 @@ std::pair<std::vector<edge>, double> astar_change(const std::vector<edge> &edges
             }
         }
 
-        // Generujemy opcję czekania (np. o 15 minut) na lepsze połączenie
+        // Opcja czekania (np. o 15 minut) na lepsze połączenie
         auto waitTime = current.time + std::chrono::minutes(15);
         bool hasEdgesAfterWait = false;
         if (adj.find(current.stop) != adj.end()) {
-            for (const auto &e : adj[current.stop]) {
+            for (const auto &e : adj.at(current.stop)) {
                 if (e.getDepartureTime() >= waitTime) {
                     hasEdgesAfterWait = true;
                     break;
@@ -185,7 +207,7 @@ std::pair<std::vector<edge>, double> astar_change(const std::vector<edge> &edges
 
         if (adj.find(current.stop) == adj.end()) continue;
 
-        for (const auto &e : adj[current.stop]) {
+        for (const auto &e : adj.at(current.stop)) {
             if (e.getDepartureTime() >= current.time) {
                 auto arrival = e.getArrivalTime();
                 // Sprawdzenie zmiany linii – jeśli poprzednia linia (ostatni element trasy) różni się od bieżącej
@@ -216,9 +238,10 @@ std::pair<std::vector<edge>, double> astar_change(const std::vector<edge> &edges
         }
     }
 
-    // W przypadku braku znalezienia trasy zwracamy pustą trasę oraz koszt -1.
+    // W przypadku braku znalezienia ścieżki – zwracamy pustą trasę oraz koszt -1.
     return {{}, -1.0};
 }
+
 
 bool TransferState::operator>(const TransferState &other) const {
     if (estimated == other.estimated) {

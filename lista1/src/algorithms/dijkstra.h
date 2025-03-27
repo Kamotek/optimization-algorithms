@@ -68,17 +68,18 @@ struct StateChange {
  * wybierając trasy o najkrótszym czasie przejazdu. Funkcja wykorzystuje kolejkę priorytetową,
  * a funkcję kosztu definiuje jako różnicę czasu (w sekundach) między momentem przybycia a czasem rozpoczęcia.
  *
- * @param edges Lista wszystkich krawędzi (połączeń) w grafie.
+ * @param adj Wygenerowany graf
  * @param start Nazwa przystanku początkowego.
  * @param end Nazwa przystanku docelowego.
  * @param startTime Czas rozpoczęcia podróży.
  * @return std::pair<std::vector<edge>, double> Para, gdzie pierwszy element to wyznaczona trasa,
  *         a drugi element to koszt trasy (różnica czasu w sekundach). W przypadku braku trasy zwraca parę {pusta trasa, -1.0}.
  */
-std::pair<std::vector<edge>, double> dijkstra_time(const std::vector<edge>& edges,
+std::pair<std::vector<edge>, double> dijkstra_time(std::unordered_map<std::string, std::vector<edge>>& adj,
                                 const std::string& start,
                                 const std::string& end,
-                                const std::chrono::system_clock::time_point& startTime);
+                                const std::chrono::system_clock::time_point& startTime
+                                );
 
 /**
  * @brief Funkcja Dijkstry wyszukująca trasę z uwzględnieniem liczby przesiadek.
@@ -94,7 +95,7 @@ std::pair<std::vector<edge>, double> dijkstra_time(const std::vector<edge>& edge
  *         a drugi element to koszt trasy (liczba przesiadek). Jeśli trasa nie zostanie znaleziona,
  *         zwracana jest para {pusta trasa, -1.0}.
  */
-std::pair<std::vector<edge>, double> dijkstra_change(const std::vector<edge>& edges,
+std::pair<std::vector<edge>, double> dijkstra_change(std::unordered_map<std::string, std::vector<edge>>& adj,
                                 const std::string& start,
                                 const std::string& end,
                                 const std::chrono::system_clock::time_point& startTime);
