@@ -1,6 +1,8 @@
 // main.cpp
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <iomanip>   // Dla std::setprecision
 #include "io_handling/csv_reader.h"
 #include "graph/graph_generator.h"
 #include "graph/graph.h"
@@ -10,6 +12,11 @@
 #include <io.h>
 #include <windows.h>
 
+// Funkcja pomocnicza do wypisywania dzielnika sekcji
+void printDivider(const std::string &title) {
+    std::cout << "\n========== " << title << " ==========\n";
+}
+
 // Funkcja pomocnicza do wypisania trasy
 void printRoute(const std::vector<edge>& route) {
     if (route.empty()) {
@@ -17,38 +24,41 @@ void printRoute(const std::vector<edge>& route) {
         return;
     }
     for (const auto& e : route) {
-        std::cout << e.to_str() << std::endl;
+        std::cout << "-> " << e.to_str() << std::endl;
     }
 }
 
 int main() {
-    SetConsoleCP(CP_UTF8); // Ustaw konsolę na UTF-8
+    SetConsoleCP(CP_UTF8); // Ustawienie konsoli na UTF-8
     std::locale::global(std::locale(""));
     std::wcout.imbue(std::locale());
 
-
-    // Wczytanie danych z pliku CSV
     std::vector<std::string> data = readCSVFile("../data/connection_graph.csv");
     if (data.empty()) {
         std::cerr << "Błąd wczytywania danych z pliku CSV." << std::endl;
         return 1;
     }
     data.erase(data.begin()); // Usuwamy nagłówek
+
     graph_generator generator(data);
     std::vector<edge> edges = generator.get_graphs();
 
-    // Budujemy graf (jeśli jest potrzebny w dalszej logice)
-    // Graph graph;
-    // graph.buildGraph(edges);
 
-    // Utworzenie obiektu CLI, który pobiera wszystkie dane i wybiera algorytm
+
     user_cli cli;
-    // Wykonanie algorytmu na podstawie danych z CLI
-    std::vector<edge> bestRoute = cli.execute(edges);
 
-    // Wypisanie wyników
-    std::cout << "\n==== Wynik trasy ====" << std::endl;
+    std::pair<std::vector<edge>, double> result = cli.execute(edges);
+
+
+    std::vector<edge> bestRoute = result.first;
+    double bestCost = result.second;
+
+    printDivider("Wynik trasy");
     printRoute(bestRoute);
+
+    printDivider("Koszt");
+    std::cout << "Koszt trasy: " << bestCost << std::endl;
+
 
     return 0;
 }

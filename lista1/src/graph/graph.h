@@ -9,19 +9,18 @@
 
 class Graph {
 private:
-    std::unordered_map<std::string, Vertex*> nodes;
+    std::unordered_map<std::string, std::vector<edge>> adj;
 public:
     Graph();
     ~Graph();
 
-    // Dodaje krawędź do grafu, generując unikalne wierzchołki.
-    void addEdge(const edge &e);
 
     // Buduje graf na podstawie listy krawędzi.
     void buildGraph(const std::vector<edge>& edges);
+    const std::unordered_map<std::string, std::vector<edge>>& getAdjacencyList() const {
+        return adj;
+    }
 
-    // Zwraca wektor wskaźników do wierzchołków grafu.
-    std::vector<Vertex*> getNodes() const;
 };
 
 #endif // GRAPH_H

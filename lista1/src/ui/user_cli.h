@@ -16,9 +16,8 @@
 class user_cli {
 public:
     user_cli();
-    std::vector<edge> execute(const std::vector<edge>& edges);
+std::pair<std::vector<edge>,double> execute(const std::vector<edge>& edges);
 
-    // Gettery, jeśli potrzebne
     std::string get_start_stop() const;
     std::string get_end_stop() const;
     char get_optimization_criteria() const;

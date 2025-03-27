@@ -13,14 +13,10 @@ bool StateChange::operator>(const StateChange &other) const {
 }
 
 
-std::pair<std::vector<edge>, double> dijkstra_time(const std::vector<edge>& edges,
+std::pair<std::vector<edge>, double> dijkstra_time(std::unordered_map<std::string, std::vector<edge>>& adj,
                                                    const std::string& start,
                                                    const std::string& end,
                                                    const std::chrono::system_clock::time_point& startTime) {
-    std::unordered_map<std::string, std::vector<edge>> adj;
-    for (const auto &e : edges) {
-        adj[e.getStartStop()].push_back(e);
-    }
 
     std::unordered_map<std::string, std::chrono::system_clock::time_point> best;
     best[start] = startTime;
@@ -58,14 +54,11 @@ std::pair<std::vector<edge>, double> dijkstra_time(const std::vector<edge>& edge
     return {{}, -1.0};
 }
 
-std::pair<std::vector<edge>, double> dijkstra_change(const std::vector<edge>& edges,
+std::pair<std::vector<edge>, double> dijkstra_change(std::unordered_map<std::string, std::vector<edge>>& adj,
                                                   const std::string& start,
                                                   const std::string& end,
                                                   const std::chrono::system_clock::time_point& startTime) {
-    std::unordered_map<std::string, std::vector<edge>> adj;
-    for (const auto &e : edges) {
-        adj[e.getStartStop()].push_back(e);
-    }
+
 
     std::unordered_map<std::string, std::unordered_map<std::string, int>> best;
     std::priority_queue<StateChange, std::vector<StateChange>, std::greater<StateChange>> pq;
