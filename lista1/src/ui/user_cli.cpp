@@ -19,8 +19,10 @@ using namespace chrono;
 user_cli::user_cli() {
     std::locale::global(std::locale(""));
     std::wcout.imbue(std::locale());
+#ifdef _WIN32
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
+#endif
     gatherBasicData();
     gatherAlgorithmChoice();
 }

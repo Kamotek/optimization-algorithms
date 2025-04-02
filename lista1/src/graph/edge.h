@@ -6,6 +6,8 @@
 #define EDGE_H
 #include <chrono>
 #include <string>
+#include <sstream>
+
 
 // przykladowa linia wycieta z pliku csv
 //  4,MPK Autobusy,A,20:57:00,20:59:00,Bałtycka,Broniewskiego,51.13663187,17.0306168,51.13585101,17.03738306
