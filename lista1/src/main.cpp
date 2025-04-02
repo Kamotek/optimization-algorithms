@@ -9,8 +9,11 @@
 #include "ui/user_cli.h"
 #include "graph/edge.h"
 #include <fcntl.h>
+
+#ifdef _WIN32
 #include <io.h>
 #include <windows.h>
+#endif
 
 // Funkcja pomocnicza do wypisywania dzielnika sekcji
 void printDivider(const std::string &title) {
@@ -29,7 +32,9 @@ void printRoute(const std::vector<edge>& route) {
 }
 
 int main() {
+#ifdef _WIN32
     SetConsoleCP(CP_UTF8); // Ustawienie konsoli na UTF-8
+#endif
     std::locale::global(std::locale(""));
     std::wcout.imbue(std::locale());
 

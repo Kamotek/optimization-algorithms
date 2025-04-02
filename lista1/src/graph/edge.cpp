@@ -28,9 +28,18 @@ edge::edge(uint32_t id,
         end_stop_lon(end_stop_lon) {
 }
 
+#include <sstream>
+#include <iomanip>   // Dodaj, jeśli jeszcze nie ma
+#include <ctime>     // Potrzebne dla std::localtime
+
 std::string edge::to_str() const {
     std::stringstream ss;
-    ss << "LINIA: " << line << " " << "GODZINA PRZYJAZDU: " << arrival_time << " " << start_stop << "-" << end_stop;
+    // Konwersja time_point na std::time_t
+    std::time_t arrival_time_t = std::chrono::system_clock::to_time_t(arrival_time);
+    // Formatowanie daty i godziny (np. "YYYY-MM-DD HH:MM:SS")
+    ss << "LINIA: " << line << " "
+       << "GODZINA PRZYJAZDU: "
+       << std::put_time(std::localtime(&arrival_time_t), "%F %T") << " "
+       << start_stop << "-" << end_stop;
     return ss.str();
 }
-

@@ -11,7 +11,9 @@
 #include <vector>
 #include <chrono>
 #include "../graph/edge.h"
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 class user_cli {
 public:
