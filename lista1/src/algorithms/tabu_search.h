@@ -65,11 +65,12 @@ int count_transfers(const std::vector<edge>& route);
  * @param startTime Czas rozpoczęcia podróży.
  * @return std::vector<edge> Zbudowana trasa.
  */
-std::vector<edge> construct_route(const std::vector<std::string>& order,
-                                  const std::vector<edge>& edges,
-                                  const std::string& start,
-                                  const std::string& end,
-                                  const std::chrono::system_clock::time_point& startTime);
+std::vector<edge> construct_route(const std::vector<std::string> &order,
+                             std::unordered_map<std::string, std::vector<edge>> &adj,
+                             const std::vector<edge> &edges,
+                             const std::string &start,
+                             const std::string &end,
+                             const std::chrono::system_clock::time_point &startTime);
 
 /**
  * @brief Oblicza koszt trasy na podstawie liczby przesiadek.
@@ -85,11 +86,12 @@ std::vector<edge> construct_route(const std::vector<std::string>& order,
  * @param startTime Czas rozpoczęcia podróży.
  * @return double Koszt trasy (liczba przesiadek) lub INT_MAX, jeśli trasa nie istnieje.
  */
-double calculate_cost(const std::vector<std::string>& order,
-                   const std::vector<edge>& edges,
-                   const std::string& start,
-                   const std::string& end,
-                   const std::chrono::system_clock::time_point& startTime);
+double calculate_cost(const std::vector<std::string> &order,
+                      std::unordered_map<std::string, std::vector<edge>> &adj,
+                      const std::vector<edge> &edges,
+                      const std::string &start,
+                      const std::string &end,
+                      const std::chrono::system_clock::time_point &startTime);
 
 /**
  * @brief Główna funkcja algorytmu Tabu Search.

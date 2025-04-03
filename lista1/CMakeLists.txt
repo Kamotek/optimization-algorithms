@@ -25,4 +25,6 @@ add_executable(lista1 src/main.cpp
         src/graph/graph.cpp
         src/graph/graph.h
         src/algorithms/tabu_search.cpp
-        src/algorithms/tabu_search.h)
+        src/algorithms/tabu_search.h
+        src/algorithms/tabu_search_knox.cpp
+        src/algorithms/tabu_search_knox.h)
