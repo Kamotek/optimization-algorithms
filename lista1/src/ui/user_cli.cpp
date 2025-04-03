@@ -9,6 +9,7 @@
 #include "../algorithms/dijkstra.h"
 #include "../algorithms/astar.h"
 #include "../algorithms/tabu_search.h"
+#include "../algorithms/tabu_search_knox.h"  // Dodajemy nagłówek dla nowej funkcji
 
 // Do budowy grafu wykorzystamy naszą klasę Graph:
 #include "../graph/graph.h"
@@ -87,15 +88,16 @@ void user_cli::gatherAlgorithmChoice() {
         std::cout << "1. Dijkstra (przesiadkowy)" << std::endl;
         std::cout << "2. A* (przesiadkowy)" << std::endl;
     }
-    std::cout << "3. Tabu Search" << std::endl;
-    std::cout << "Wybierz opcję (1, 2, lub 3): ";
+    std::cout << "3. Tabu Search (klasyczny)" << std::endl;
+    std::cout << "4. Tabu Search Knox" << std::endl;  // Dodana opcja dla tabu_search_knox
+    std::cout << "Wybierz opcję (1, 2, 3 lub 4): ";
     std::string algo_str;
     std::getline(std::cin, algo_str);
     if (!algo_str.empty())
         algorithm_choice = std::stoi(algo_str);
 
-    if (algorithm_choice == 3) {
-        std::cout << "Podaj przystanki do pośrednie (oddziel spacjami): ";
+    if (algorithm_choice == 3 || algorithm_choice == 4) {
+        std::cout << "Podaj przystanki pośrednie (oddzielone spacjami): ";
         std::string line;
         std::getline(std::cin, line);
         std::istringstream iss(line);
@@ -151,7 +153,7 @@ std::pair<std::vector<edge>, double> user_cli::execute(const std::vector<edge>& 
         }
     } else if (algorithm_choice == 3) {
         auto start = chrono::high_resolution_clock::now();
-        // Wywołujemy odpowiednią wersję Tabu Search w zależności od kryterium
+        // Klasyczny Tabu Search – wersja zależna od kryterium
         if (optimization_criteria == 't') {
             auto res = tabu_search(adj, edges, start_stop, end_stop, excluded_stops, start_time, 100);
             route = {res.first, static_cast<double>(res.second)};
@@ -159,6 +161,13 @@ std::pair<std::vector<edge>, double> user_cli::execute(const std::vector<edge>& 
             auto res = tabu_search_change(adj, edges, start_stop, end_stop, excluded_stops, start_time, 100);
             route = {res.first, static_cast<double>(res.second)};
         }
+        auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start);
+        std::cerr << "Czas wykonania: " << duration.count() << " ms\n";
+    } else if (algorithm_choice == 4) {
+        auto start = chrono::high_resolution_clock::now();
+        // Użycie nowej funkcji Tabu Search Knox – przykładowe parametry: step_limit = 100, op_limit = 10
+        auto res = tabu_search_knox(adj, edges, start_stop, end_stop, excluded_stops, start_time, 100, 10);
+        route = {res.first, static_cast<double>(res.second)};
         auto duration = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start);
         std::cerr << "Czas wykonania: " << duration.count() << " ms\n";
     } else {
